@@ -16,4 +16,5 @@ object DBSchema {
   val shares = TableQuery[ShareTable]
   val investStatements = TableQuery[InvestStatementTable]
   val remits = TableQuery[RemitTable]
+  val appendants = TableQuery[AppendantTable]
 }

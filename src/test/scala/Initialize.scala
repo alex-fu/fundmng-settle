@@ -25,7 +25,8 @@ object GenInitTableSqls extends App {
       DBSchema.tradeSummaries.schema.createStatements ++
       DBSchema.shares.schema.createStatements ++
       DBSchema.investStatements.schema.createStatements ++
-      DBSchema.remits.schema.createStatements
+      DBSchema.remits.schema.createStatements ++
+      DBSchema.appendants.schema.createStatements
 
   //  println(schemaSqls.mkString(";\n"))
 
@@ -54,7 +55,8 @@ object InitTable extends App {
       DBSchema.tradeSummaries.schema.create,
       DBSchema.shares.schema.create,
       DBSchema.investStatements.schema.create,
-      DBSchema.remits.schema.create
+      DBSchema.remits.schema.create,
+      DBSchema.appendants.schema.create
   )
 
   Await.result(schemaSqls.foldLeft(FastFuture.successful[Any](()))((fs, x) => fs.flatMap(_ => db.run(x))), Duration.Inf)
