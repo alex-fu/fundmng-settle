@@ -23,6 +23,16 @@ abstract class CommonDAO[E, T <: RelationalProfile#Table[E]: TypeTag: ClassTag] 
     db.run(q)
   }
 
+  def insertMany(elems: Iterable[E]) = {
+    if (elems.nonEmpty) {
+      val q = tableQ ++= elems
+      sqlDebug(q.statements.mkString(";\n"))
+      db.run(q)
+    } else {
+      Future.successful(0)
+    }
+  }
+
   def update[PKType: BaseTypedType](v: PKType, elem: E) = {
     val q = tableQ.filter(row => getPKColumn(row)(pk).asInstanceOf[Rep[PKType]] === v).update(elem)
     sqlDebug(q.statements.mkString(";\n"))

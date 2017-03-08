@@ -60,7 +60,10 @@ lazy val dependencySettings = {
         "org.slf4j"                     %  "jcl-over-slf4j"         % "1.7.12",
         "org.slf4j"                     %  "log4j-over-slf4j"       % "1.7.12",
         "com.github.swagger-akka-http"  %  "swagger-akka-http_2.11" % "0.9.0",
-        "io.spray"                      %% "spray-json"         % "1.3.2"
+        "io.spray"                      %% "spray-json"             % "1.3.2",
+        "com.chuusai"                   %% "shapeless"              % "2.3.1",
+        "io.underscore"                 %% "slickless"              % "0.3.0",
+        "io.github.cloudify"            %% "spdf"                   % "1.4.0"
       )
     ).map(_.excludeAll(
       ExclusionRule("commons-logging", "commons-logging"),
@@ -107,6 +110,7 @@ lazy val commonScalacOptions = Seq(
   , "-encoding", "UTF-8"
   , "-feature"                   // Emit warning and location for usages of features that should be imported explicitly
   , "-language:postfixOps"
+  , "-language:implicitConversions"
 //  , "-unchecked"               // Enable additional warnings where generated code depends on assumptions
 //  , "-Xfatal-warnings"         // Fail the compilation if there are any warnings
 //  , "-Xfuture"                 // Turn on future language features

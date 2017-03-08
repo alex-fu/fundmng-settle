@@ -1,12 +1,12 @@
 package com.heqiying.fundmng.settle
 
-import akka.actor.ActorSystem
+import akka.actor.{ ActorSystem, Props }
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.server.Directives._
 import com.heqiying.fundmng.settle.interface.{ ApiHttpInterface, HttpLoggerInterface, SwaggerDocService }
 import com.heqiying.fundmng.settle.common.{ AppConfig, LazyLogging }
-import com.heqiying.fundmng.settle.service.SettleApp
+import com.heqiying.fundmng.settle.service.{ SettleActor, SettleApp }
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -17,7 +17,10 @@ object FundmngSettleMicroService extends App with LazyLogging {
   implicit val ec = system.dispatcher
   val timeout = 10.seconds
 
-  implicit val settleApp = new SettleApp
+  // initialize singleton settle actor
+  val settleActorRef = system.actorOf(Props.apply[SettleActor])
+
+  implicit val settleApp = new SettleApp(settleActorRef)
   val swaggerDocService = new SwaggerDocService(system, mat)
   val apiInterface = new ApiHttpInterface()
 

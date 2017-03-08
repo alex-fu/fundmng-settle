@@ -3,7 +3,9 @@ package com.heqiying.fundmng.settle.model
 import com.heqiying.fundmng.settle.database.MainDBProfile.profile.api._
 import java.sql.Date
 
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import slick.profile.SqlProfile.ColumnOption.Nullable
+import spray.json._
 
 case class Purchase(id: Option[Long], accountUuid: String, account: String,
   fundUuid: String, fundCode: String,
@@ -60,6 +62,12 @@ case class DividendTypeChange(id: Option[Long], accountUuid: String, account: St
   openDate: Date, tradeDate: Date, dividendType: String,
   cashPercent: BigDecimal, comment: Option[String])
 
+object DividendTypeChanges {
+  val CashDividendType = "cash"
+  val ReinvestDividendType = "reinvest"
+  val MixDividendType = "mix"
+}
+
 class DividendTypeChangeTable(tag: Tag) extends Table[DividendTypeChange](tag, "dividend_type_changes") {
   def id = column[Long]("id", O.AutoInc, O.PrimaryKey)
   def accountUuid = column[String]("account_uuid", O.Length(63, varying = false))
@@ -89,4 +97,15 @@ class DividendTable(tag: Tag) extends Table[Dividend](tag, "dividends") {
   def comment = column[String]("comment", Nullable)
 
   def * = (id.?, fundUuid, fundCode, openDate, tradeDate, perShare, comment.?) <> (Dividend.tupled, Dividend.unapply)
+}
+
+object TradeJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit object sqlDateJsonFormat extends RootJsonFormat[java.sql.Date] {
+    override def read(json: JsValue): Date = Date.valueOf(json.toString())
+
+    override def write(obj: Date): JsValue = JsString(obj.toString)
+  }
+  implicit val purchaseJsonFormat: RootJsonFormat[Purchase] = jsonFormat12(Purchase.apply)
+  implicit val redemptionJsonFormat = jsonFormat11(Redemption.apply)
+  implicit val dividendTypeChangeJsonFormat = jsonFormat10(DividendTypeChange.apply)
 }
