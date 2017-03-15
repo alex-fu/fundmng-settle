@@ -1,12 +1,16 @@
 package com.heqiying.fundmng.settle.service
 
+import java.sql.Date
+
 import com.heqiying.fundmng.settle.common.LazyLogging
 import com.heqiying.fundmng.settle.dao._
 import com.heqiying.fundmng.settle.database.MainDBProfile.profile.api._
 import com.heqiying.fundmng.settle.model._
+import com.heqiying.fundmng.settle.utils.AppErrors
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{ Failure, Success, Try }
 
 trait QueryService extends LazyLogging {
   def getShares(settleUuid: String): Future[Seq[Share]] = {
@@ -80,6 +84,20 @@ trait QueryService extends LazyLogging {
       case e =>
         logger.error(s"Get settle histories for $fundUuid failed! Reason: $e")
         Seq[Settle]()
+    }
+  }
+
+  def getSettle(fundUuid: String, openDate: String): Future[Option[Settle]] = {
+    Try(Date.valueOf(openDate)) match {
+      case Success(d) =>
+        SettleDAO.get(fundUuid, d).recover {
+          case e =>
+            logger.error(s"Get settle for $fundUuid($openDate) failed! Reason: $e")
+            None
+        }
+      case Failure(e) =>
+        logger.error(s"Invalid open date $openDate on fund $fundUuid")
+        Future.failed(AppErrors.InvalidOpenDay())
     }
   }
 }

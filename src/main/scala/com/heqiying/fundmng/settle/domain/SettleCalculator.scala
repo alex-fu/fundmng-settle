@@ -1,12 +1,9 @@
 package com.heqiying.fundmng.settle.domain
 
-import java.io.{ByteArrayOutputStream, File}
-
 import com.heqiying.fundmng.settle.common.LazyLogging
 import com.heqiying.fundmng.settle.dao.FundDAO
 import com.heqiying.fundmng.settle.model._
 import com.heqiying.fundmng.settle.utils.AppErrors
-import io.github.cloudify.scala.spdf._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

@@ -23,7 +23,7 @@ object AppErrors {
 
   // OpenDay Settle Errors (1100 ~ 1199)
   def InvalidFund(detail: String = "") = AppError(1100, "Invalid fund", detail)
-  def InvalidOpenDay(detail: String = "") = AppError(1101, "Invalid openday", detail)
+  def InvalidOpenDay(detail: String = "") = AppError(1101, "Invalid openday, format eg.: 2017-03-31", detail)
   def NavNotExist(detail: String = "") = AppError(1102, "Net asset value not found", detail)
   def InvalidTrades(detail: String = "") = AppError(1103, "Invalid trades", detail)
 }

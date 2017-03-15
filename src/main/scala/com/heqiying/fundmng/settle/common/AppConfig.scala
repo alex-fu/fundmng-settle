@@ -10,7 +10,7 @@ object AppConfig {
   import com.heqiying.konfig.Konfig._
 
   case class AdminConfig(name: String, port: Int)
-  case class ApiConfig(`private`: PrivateConfig)
+  case class ApiConfig(authorization: Boolean, `private`: PrivateConfig)
   case class PrivateConfig(allowAllAddress: Boolean, allowedAddresses: List[String])
   case class ActivitiConfig(host: String, port: Int, baseUri: String, defaultPassword: String, dummyUser: String, dummyPassword: String)
   case class RDSConfig(`type`: String)

@@ -1,6 +1,6 @@
 import java.io.File
 
-import com.heqiying.fundmng.settle.utils.{ImageGen, ImageGenConfig}
+import com.heqiying.fundmng.settle.utils.{ ImageGen, ImageGenConfig }
 
 object ImageGenTest extends App {
   val imageGen = ImageGen(new ImageGenConfig {
@@ -24,10 +24,10 @@ object ImageGenTest extends App {
           <div style="text-align: center; display: table-cell; vertical-align: middle; font-weight:bold;">基金交易对账单</div>
         </div>
         <div style="margin-left: 80px; font-size: 16; display: table;">
-          <p>客户姓名: {name}</p>
-          <p>证件号码: {identityId}</p>
-          <p>基金账户: {accountId}</p>
-          <p>客户类型: {investorType}</p>
+          <p>客户姓名: { name }</p>
+          <p>证件号码: { identityId }</p>
+          <p>基金账户: { accountId }</p>
+          <p>客户类型: { investorType }</p>
         </div>
         <div style="margin: 0 auto; text-align: center; ">
           <p style="font-size: 20; color: #E63F00;">您本期的基金交易明细</p>

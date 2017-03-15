@@ -15,7 +15,8 @@ class SwaggerDocService(system: ActorSystem, mat: ActorMaterializer) extends Swa
   override val info = Info() //provides license and other description details
 
   override val apiTypes = Seq(
-    typeOf[OpenDaySettleAPI]
+    typeOf[OpenDaySettleAPI],
+    typeOf[SettleQueryAPI]
   )
 
   val docsRoute = get {

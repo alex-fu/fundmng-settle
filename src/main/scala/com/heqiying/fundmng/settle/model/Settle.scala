@@ -1,10 +1,12 @@
 package com.heqiying.fundmng.settle.model
 
 import com.heqiying.fundmng.settle.database.MainDBProfile.profile.api._
-
 import java.sql.Date
+
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import shapeless._
 import slickless._
+import spray.json.{ DefaultJsonProtocol, JsNumber, JsObject, JsString, JsValue, RootJsonFormat }
 
 case class Settle(id: Option[Int], uuid: String, fundUuid: String, fundCode: String,
   fundName: String, settleDate: Date, tpe: String,
@@ -201,4 +203,50 @@ class RemitTable(tag: Tag) extends Table[Remit](tag, "remits") {
 
   def * = (id.?, fundUuid, fundCode, fundName, accountUuid, account, investorName,
     investorType, investorIdentityId, settleUuid, settleDate, remitAmount) <> (Remit.tupled, Remit.unapply)
+}
+
+object SettleJsonSupport extends DefaultJsonProtocol with SprayJsonSupport {
+  implicit object sqlDateJsonFormat extends RootJsonFormat[java.sql.Date] {
+    override def read(json: JsValue): Date = Date.valueOf(json.toString())
+    override def write(obj: Date): JsValue = JsString(obj.toString)
+  }
+
+  implicit val settleJsonFormat = jsonFormat9(Settle.apply)
+  implicit val shareJsonFormat = jsonFormat13(Share.apply)
+  implicit val tradeSummaryJsonFormat = jsonFormat18(TradeSummary.apply)
+  implicit val investStatementJsonFormat = jsonFormat14(InvestStatement.apply)
+  implicit val remitJsonFormat = jsonFormat12(Remit.apply)
+
+  implicit object tradeJsonSupport extends RootJsonFormat[Trade] {
+    def write(p: Trade) = {
+      val fields = new collection.mutable.ListBuffer[(String, JsValue)]
+      fields.sizeHint(24 * 25)
+      fields ++= productElement2Field[Option[Long]]("id", p, 0)
+      fields ++= productElement2Field[String]("fundUuid", p, 1)
+      fields ++= productElement2Field[String]("fundCode", p, 2)
+      fields ++= productElement2Field[String]("fundName", p, 3)
+      fields ++= productElement2Field[String]("accountUuid", p, 4)
+      fields ++= productElement2Field[String]("account", p, 5)
+      fields ++= productElement2Field[String]("investorName", p, 6)
+      fields ++= productElement2Field[String]("investorType", p, 7)
+      fields ++= productElement2Field[String]("investorIdentityId", p, 8)
+      fields ++= productElement2Field[String]("settleUuid", p, 9)
+      fields ++= productElement2Field[Date]("settleDate", p, 10)
+      fields ++= productElement2Field[Date]("tradeDate", p, 11)
+      fields ++= productElement2Field[String]("tradeType", p, 12)
+      fields ++= productElement2Field[BigDecimal]("preShare", p, 13)
+      fields ++= productElement2Field[BigDecimal]("share", p, 14)
+      fields ++= productElement2Field[BigDecimal]("tradeNav", p, 15)
+      fields ++= productElement2Field[BigDecimal]("dividendPerShare", p, 16)
+      fields ++= productElement2Field[BigDecimal]("purchaseAmount", p, 17)
+      fields ++= productElement2Field[BigDecimal]("redemptionAmount", p, 18)
+      fields ++= productElement2Field[BigDecimal]("cashDividendAmount", p, 19)
+      fields ++= productElement2Field[BigDecimal]("reinvestShare", p, 20)
+      fields ++= productElement2Field[BigDecimal]("shareChange", p, 21)
+      fields ++= productElement2Field[BigDecimal]("remitChange", p, 22)
+      fields ++= productElement2Field[BigDecimal]("fee", p, 23)
+      JsObject(fields: _*)
+    }
+    def read(j: JsValue) = ??? // no need to implement
+  }
 }

@@ -40,6 +40,11 @@ object InitData {
   val openDate1Nav = 1.0
   val openDate1AccuNav = 1.0
 
+  val openDate2_0 = "2017-06-29" // fake openday
+  val openDate2_0BeforeRewardNav = 1.49
+  val openDate2_0Nav = 1.49
+  val openDate2_0AccuNav = 1.49
+
   val openDate2 = "2017-06-30"
   val openDate2BeforeRewardNav = 1.5
   val openDate2Nav = 1.5
@@ -125,6 +130,8 @@ object InitData {
   def initTradesOnOpenDate2() = {
     val initData = Seq(
       // init FundNav
+      DBSchema.fundNavs += FundNav(None, testFundUuid, testFund, Date.valueOf(openDate2_0),
+        openDate2_0BeforeRewardNav, openDate2_0Nav, openDate2_0AccuNav),
       DBSchema.fundNavs += FundNav(None, testFundUuid, testFund, Date.valueOf(openDate2),
         openDate2BeforeRewardNav, openDate2Nav, openDate2AccuNav),
 

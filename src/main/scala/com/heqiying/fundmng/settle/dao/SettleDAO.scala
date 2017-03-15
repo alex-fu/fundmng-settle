@@ -33,4 +33,11 @@ object SettleDAO extends CommonDAO[SettleTable#TableElementType, SettleTable] {
     sqlDebug(q0.statements.mkString(";\n"))
     db.run(q0)
   }
+
+  def get(fundUuid: String, openDate: Date) = {
+    val q0 = tableQ.filter(_.fundUuid === fundUuid).filter(_.openDate === openDate).
+      filter(_.state =!= Settles.DroppedState).result.headOption
+    sqlDebug(q0.statements.mkString(";\n"))
+    db.run(q0)
+  }
 }

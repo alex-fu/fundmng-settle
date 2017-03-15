@@ -29,9 +29,10 @@ class OpenDaySettleAPI(implicit val app: SettleApp, val system: ActorSystem, val
   @ApiOperation(value = "settle", nickname = "openday settle", httpMethod = "POST")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "fundUuid", value = """...""", required = true, dataType = "string", paramType = "path", defaultValue = ""),
-    new ApiImplicitParam(name = "openDate", value = """20170331""", required = true, dataType = "string", paramType = "path", defaultValue = "")
+    new ApiImplicitParam(name = "openDate", value = """2017-03-31""", required = true, dataType = "string", paramType = "path", defaultValue = "")
   ))
-  def settleRoute = path("api" / "v1" / Segment / Segment / "settles") { (fundUuid, openDate) =>
+  @Path("/{fundUuid}/{openDate}/settle")
+  def settleRoute = path("api" / "v1" / "settles" / Segment / Segment / "settle") { (fundUuid, openDate) =>
     import DefaultJsonProtocol._
     import SprayJsonSupport._
     post {
@@ -48,63 +49,46 @@ class OpenDaySettleAPI(implicit val app: SettleApp, val system: ActorSystem, val
     }
   }
 
-  @ApiOperation(value = "dropSettle", nickname = "drop openday settle", httpMethod = "POST")
+  @ApiOperation(value = "dropSettle", nickname = "drop settle", httpMethod = "POST")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "fundUuid", value = """...""", required = true, dataType = "string", paramType = "path", defaultValue = ""),
-    new ApiImplicitParam(name = "openDate", value = """20170331""", required = true, dataType = "string", paramType = "path", defaultValue = "")
+    new ApiImplicitParam(name = "settleUuid", value = """...""", required = true, dataType = "string", paramType = "path", defaultValue = "")
   ))
-  def dropSettledRoute = path("api" / "v1" / Segment / Segment / "settles") { (fundUuid, openDate) =>
+  @Path("/{fundUuid}/{settleUuid}/dropSettled")
+  def dropSettledRoute = path("api" / "v1" / "settles" / Segment / Segment / "dropSettled") { (fundUuid, settleUuid) =>
     post {
-      onComplete(app.dropSettle(fundUuid, openDate)) {
-        case Success(settleUuid) => complete(HttpResponse(StatusCodes.OK))
+      onComplete(app.dropSettle(fundUuid, settleUuid)) {
+        case Success(_) => complete(HttpResponse(StatusCodes.OK))
         case Failure(e: AppError) =>
           import com.heqiying.fundmng.settle.utils.AppErrorJsonProtocol._
-          logger.error(s"Drop openday settle failed! fundUuid: $fundUuid, openDate: $openDate, Reason: $e")
+          logger.error(s"Drop settle failed! fundUuid: $fundUuid, settleUuid: $settleUuid, Reason: $e")
           complete(HttpResponse(StatusCodes.BadRequest, entity = e.toJson.compactPrint))
         case Failure(e) =>
-          logger.error(s"Drop openday settle failed! fundUuid: $fundUuid, openDate: $openDate, Reason: $e")
+          logger.error(s"Drop settle failed! fundUuid: $fundUuid, settleUuid: $settleUuid, Reason: $e")
           complete(HttpResponse(StatusCodes.InternalServerError))
       }
     }
   }
 
-  @ApiOperation(value = "confirmSettle", nickname = "confirm openday settle", httpMethod = "POST")
+  @ApiOperation(value = "confirmSettle", nickname = "confirm settle", httpMethod = "POST")
   @ApiImplicitParams(Array(
     new ApiImplicitParam(name = "fundUuid", value = """...""", required = true, dataType = "string", paramType = "path", defaultValue = ""),
-    new ApiImplicitParam(name = "openDate", value = """20170331""", required = true, dataType = "string", paramType = "path", defaultValue = "")
+    new ApiImplicitParam(name = "settleUuid", value = """...""", required = true, dataType = "string", paramType = "path", defaultValue = "")
   ))
-  def confirmSettledRoute = path("api" / "v1" / Segment / Segment / "settles") { (fundUuid, openDate) =>
+  @Path("/{fundUuid}/{settleUuid}/confirmation")
+  def confirmSettledRoute = path("api" / "v1" / "settles" / Segment / Segment / "confirmation") { (fundUuid, settleUuid) =>
     post {
-      onComplete(app.confirmSettle(fundUuid, openDate)) {
-        case Success(settleUuid) => complete(HttpResponse(StatusCodes.OK))
+      onComplete(app.confirmSettle(fundUuid, settleUuid)) {
+        case Success(_) => complete(HttpResponse(StatusCodes.OK))
         case Failure(e: AppError) =>
           import com.heqiying.fundmng.settle.utils.AppErrorJsonProtocol._
-          logger.error(s"Confirm openday settle failed! fundUuid: $fundUuid, openDate: $openDate, Reason: $e")
+          logger.error(s"Confirm settle failed! fundUuid: $fundUuid, settleUuid: $settleUuid, Reason: $e")
           complete(HttpResponse(StatusCodes.BadRequest, entity = e.toJson.compactPrint))
         case Failure(e) =>
-          logger.error(s"Confirm openday settle failed! fundUuid: $fundUuid, openDate: $openDate, Reason: $e")
+          logger.error(s"Confirm settle failed! fundUuid: $fundUuid, settleUuid: $settleUuid, Reason: $e")
           complete(HttpResponse(StatusCodes.InternalServerError))
       }
     }
   }
 
-  //  @ApiOperation(value = "get shares", nickname = "confirm openday settle", httpMethod = "POST")
-  //  @ApiImplicitParams(Array(
-  //    new ApiImplicitParam(name = "fundUuid", value = """...""", required = true, dataType = "string", paramType = "path", defaultValue = ""),
-  //    new ApiImplicitParam(name = "openDate", value = """20170331""", required = true, dataType = "string", paramType = "path", defaultValue = "")
-  //  ))
-  //  def getSharesRoute = path("api" / "v1" / Segment / Segment / "shares") { (fundUuid, openDate) =>
-  //    get {
-  //      onComplete(app.getShares(fundUuid, openDate)) {
-  //        case Success(shares) => complete(shares)
-  //        case Failure(e: AppError) =>
-  //          import com.heqiying.fundmng.settle.utils.AppErrorJsonProtocol._
-  //          logger.error(s"Get shares failed! fundUuid: $fundUuid, openDate: $openDate, Reason: $e")
-  //          complete(HttpResponse(StatusCodes.BadRequest, entity = e.toJson.compactPrint))
-  //        case Failure(e) =>
-  //          logger.error(s"Get shares failed! fundUuid: $fundUuid, openDate: $openDate, Reason: $e")
-  //          complete(HttpResponse(StatusCodes.InternalServerError))
-  //      }
-  //    }
-  //  }
 }
